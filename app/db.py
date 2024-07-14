@@ -1,7 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+import os
+from dotenv import load_dotenv
 
-engine = create_engine("sqlite:///test.db")
+load_dotenv()
+
+engine = create_engine(os.getenv("DATABASE_URL", "sqlite:///test.db"))
 
 sessionLocal = sessionmaker(bind=engine)
 
