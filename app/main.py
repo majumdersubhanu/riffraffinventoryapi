@@ -2,12 +2,15 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm.session import Session
 from app import authentication as auth
-from app.crud import OrganizationRepo, UserRepo
+from app.crud import AddressRepo, CustomFieldRepo, OrganizationRepo, UserRepo
 import app.models as models
 from app.db import engine, get_db
 from app.schemas import (
+    AddressCreateSchema,
     InputUserModelSchema,
     OrganizationCreateSchema,
+    OutputAddressModelSchema,
+    OutputCustomFieldModelSchema,
     OutputOrganizationModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
@@ -30,6 +33,8 @@ def root():
 
 user_repo = UserRepo()
 org_repo = OrganizationRepo()
+addr_repo = AddressRepo()
+c_fields_repo = CustomFieldRepo()
 
 
 @app.post("/token")
@@ -148,3 +153,58 @@ async def create_organization(
     org = org_repo.create(db=db, org=request_org)
 
     return org
+
+
+@app.post(
+    "/address",
+    response_model=OutputAddressModelSchema,
+    status_code=201,
+)
+async def create_address(
+    request_addr: AddressCreateSchema,
+    org_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
+    addr = addr_repo.create(db=db, org_id=org_id, addr=request_addr)
+    return addr
+
+
+@app.get(
+    "/address/{org_id}",
+    response_model=OutputAddressModelSchema,
+    status_code=201,
+)
+async def fetch_addresses_for_organization(
+    org_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
+    pass
+
+
+@app.post(
+    "/custom_fields",
+    response_model=OutputCustomFieldModelSchema,
+    status_code=201,
+)
+async def create_custom_fielf(
+    request_custom_field: AddressCreateSchema,
+    org_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
+    pass
+
+
+@app.get(
+    "/custom_fields/{org_id}",
+    response_model=OutputCustomFieldModelSchema,
+    status_code=201,
+)
+async def fetch_custom_fields_for_organization(
+    org_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
+    pass
