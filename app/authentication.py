@@ -5,10 +5,15 @@ import jwt
 import os
 from fastapi import HTTPException, status
 
-SECRET_KEY = "3ca66e86b78330d748863ca32c976ddc51df7575da7ed9e769fa15566bf19237"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
-REFRESH_TOKEN_EXPIRE_DAYS = 15
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15)
+REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 15)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -26,9 +31,9 @@ class Authenticator:
         to_encode_access = data.copy()
         to_encode_refresh = data.copy()
         expire_access = datetime.utcnow() + (
-            expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            expires_delta or timedelta(minutes=float(ACCESS_TOKEN_EXPIRE_MINUTES))
         )
-        expire_refresh = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expire_refresh = datetime.utcnow() + timedelta(days=float(REFRESH_TOKEN_EXPIRE_DAYS))
         to_encode_access.update({"exp": expire_access})
         to_encode_refresh.update({"exp": expire_refresh})
         access_token = jwt.encode(to_encode_access, SECRET_KEY, algorithm=ALGORITHM)
