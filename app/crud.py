@@ -207,6 +207,23 @@ class OrganizationRepo:
 
         return output_orgs_schemas
 
+    def fetch_organizations_by_id(
+        self,
+        db: Session,
+        org_id: int,
+    ):
+        org_in_db = (
+            db.query(OrganizationModel).filter(OrganizationModel.id == org_id).first
+        )
+
+        if org_in_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Organization not found",
+            )
+
+        return OutputOrganizationModelSchema.from_orm(org_in_db)
+
     def update_organization(
         self,
         db: Session,
@@ -275,7 +292,6 @@ class CustomFieldRepo:
         db: Session,
         org_id: int,
         custom_field: CustomFieldCreateSchema,
-        index: int,
     ):
         custom_field_in_db = CustomFieldModel(
             organization_id=org_id,
