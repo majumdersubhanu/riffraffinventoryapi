@@ -220,3 +220,9 @@ async def fetch_custom_fields_for_organization(
     token: str = Depends(oauth2_scheme),
 ):
     pass
+
+
+@app.patch("/organizations/{org_id}", response_model=OutputCustomFieldModelSchema,
+    status_code=200,)
+async def update_organization_details(org_id: int, db: Session = Depends(get_db),):
+    pass
