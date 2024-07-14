@@ -42,7 +42,7 @@ async def generate_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     user = user_repo.login(db, form_data.username, form_data.password)
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=float(auth.ACCESS_TOKEN_EXPIRE_MINUTES),)
     authenticator = auth.Authenticator()
     tokens = authenticator.create_tokens(
         data={"sub": user.username}, expires_delta=access_token_expires
@@ -104,7 +104,7 @@ async def token_refresh(token: str, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     user = user_repo.fetch_user_by_username(db=db, username=username)
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=float(auth.ACCESS_TOKEN_EXPIRE_MINUTES))
     tokens = authenticator.create_tokens(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
