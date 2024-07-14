@@ -133,7 +133,7 @@ class OrganizationCreateSchema(OrganizationBaseSchema):
 
 
 class OrganizationUpdateSchema(OrganizationBaseSchema):
-    id: int
+    pass
 
 
 class OutputOrganizationModelSchema(OrganizationBaseSchema):

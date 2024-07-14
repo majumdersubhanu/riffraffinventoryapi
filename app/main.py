@@ -9,6 +9,7 @@ from app.schemas import (
     AddressCreateSchema,
     InputUserModelSchema,
     OrganizationCreateSchema,
+    OrganizationUpdateSchema,
     OutputAddressModelSchema,
     OutputCustomFieldModelSchema,
     OutputOrganizationModelSchema,
@@ -58,18 +59,20 @@ async def generate_access_token(
 
 # TODO: Typically we should perform a login right after the user has been created, i.e. return the JWT
 @app.post("/users", response_model=OutputUserModelSchema, status_code=201)
-def register_user(request_user: InputUserModelSchema,  background_tasks: BackgroundTasks,db: Session = Depends(get_db),):
+def register_user(
+    request_user: InputUserModelSchema,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
     user = user_repo.create(db=db, user=request_user)
     if user.organization is not None:
         default_org = OrganizationCreateSchema(
             name=user.organization,
         )
     else:
-        default_org = OrganizationCreateSchema(
-            name=f"{user.username}'s Organization"
-        ) 
+        default_org = OrganizationCreateSchema(name=f"{user.username}'s Organization")
     background_tasks.add_task(create_organization, default_org, db)
-    
+
     return user
 
 
@@ -220,3 +223,22 @@ async def fetch_custom_fields_for_organization(
     token: str = Depends(oauth2_scheme),
 ):
     pass
+
+
+@app.patch(
+    "/organizations/{org_id}",
+    response_model=OutputOrganizationModelSchema,
+    status_code=200,
+)
+async def update_organization_details(
+    org_id: int,
+    request_org: OrganizationUpdateSchema,
+    db: Session = Depends(get_db),
+):
+    updated_org = org_repo.update_organization(
+        db=db,
+        id=org_id,
+        org=request_org,
+    )
+    
+    return updated_org
