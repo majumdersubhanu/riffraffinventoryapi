@@ -18,10 +18,8 @@ from app.schemas import (
     OutputUserModelSchema,
     UpdateUserModelSchema,
     OrganizationCreateSchema,
-    OrganizationBaseSchema,
 )
 
-from datetime import datetime
 
 
 class UserRepo:

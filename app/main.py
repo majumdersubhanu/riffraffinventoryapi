@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, status, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm.session import Session
 from app import authentication as auth
@@ -42,7 +42,9 @@ async def generate_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     user = user_repo.login(db, form_data.username, form_data.password)
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(
+        minutes=float(auth.ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
     authenticator = auth.Authenticator()
     tokens = authenticator.create_tokens(
         data={"sub": user.username}, expires_delta=access_token_expires
@@ -56,8 +58,18 @@ async def generate_access_token(
 
 # TODO: Typically we should perform a login right after the user has been created, i.e. return the JWT
 @app.post("/users", response_model=OutputUserModelSchema, status_code=201)
-def register_user(request_user: InputUserModelSchema, db: Session = Depends(get_db)):
+def register_user(request_user: InputUserModelSchema,  background_tasks: BackgroundTasks,db: Session = Depends(get_db),):
     user = user_repo.create(db=db, user=request_user)
+    if user.organization is not None:
+        default_org = OrganizationCreateSchema(
+            name=user.organization,
+        )
+    else:
+        default_org = OrganizationCreateSchema(
+            name=f"{user.username}'s Organization"
+        ) 
+    background_tasks.add_task(create_organization, default_org, db)
+    
     return user
 
 
@@ -104,7 +116,7 @@ async def token_refresh(token: str, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     user = user_repo.fetch_user_by_username(db=db, username=username)
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=float(auth.ACCESS_TOKEN_EXPIRE_MINUTES))
     tokens = authenticator.create_tokens(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
