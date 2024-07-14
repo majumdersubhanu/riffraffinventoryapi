@@ -88,7 +88,7 @@ def register_user(
 async def fetch_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
-):
+) -> OutputUserModelSchema:
     try:
         authenticator = auth.Authenticator()
         payload = authenticator.decode_access_token(token)
@@ -261,11 +261,15 @@ async def update_organization_details(
     org_id: int,
     request_org: OrganizationUpdateSchema,
     db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
 ):
+    curr_usr = fetch_current_user(db=db)
+    curr_usr_id = curr_usr.id if curr_usr is OutputUserModelSchema else None
     updated_org = org_repo.update_organization(
         db=db,
         id=org_id,
         org=request_org,
+        usr_id=curr_usr_id,
     )
 
     return updated_org

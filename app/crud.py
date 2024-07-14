@@ -1,3 +1,4 @@
+from typing_extensions import Optional
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
@@ -85,6 +86,21 @@ class UserRepo:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User with given username not found",
+            )
+
+        return OutputUserModelSchema.from_orm(user_in_db)
+
+    def fetch_user_by_id(
+        self,
+        db: Session,
+        id: int,
+    ):
+        user_in_db = db.query(UserModel).filter(UserModel.id == id).first()
+
+        if user_in_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
             )
 
         return OutputUserModelSchema.from_orm(user_in_db)
@@ -228,11 +244,16 @@ class OrganizationRepo:
         self,
         db: Session,
         id: int,
+        usr_id: Optional[int] | None,
         org: OrganizationUpdateSchema,
     ):
         org_in_db = (
             db.query(OrganizationModel).filter(OrganizationModel.id == id).first()
         )
+
+        if org.name is not None:
+            user_in_db = db.query(UserModel).filter(UserModel.id == id).first()
+            setattr(user_in_db, "organization", org.name)
 
         if org_in_db is None:
             raise HTTPException(
