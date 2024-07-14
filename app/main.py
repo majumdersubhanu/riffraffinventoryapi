@@ -2,16 +2,19 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm.session import Session
 from app import authentication as auth
-from app.crud import UserRepo
+from app.crud import OrganizationRepo, UserRepo
 import app.models as models
 from app.db import engine, get_db
 from app.schemas import (
     InputUserModelSchema,
+    OrganizationCreateSchema,
+    OutputOrganizationModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
 )
 from datetime import timedelta
 import jwt
+from typing import List
 
 app = FastAPI(title="RiffRaff Inventory")
 
@@ -26,6 +29,7 @@ def root():
 
 
 user_repo = UserRepo()
+org_repo = OrganizationRepo()
 
 
 @app.post("/token")
@@ -115,3 +119,32 @@ async def update_user_profile(
 ):
     updated_user = user_repo.update_user(db=db, id=id, user=request_user)
     return updated_user
+
+
+@app.get(
+    "/organizations",
+    response_model=List[OutputOrganizationModelSchema],
+    status_code=200,
+)
+async def fetch_organizations(
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
+    orgs = org_repo.fetch_organizations(db=db)
+
+    return orgs
+
+
+@app.post(
+    "/organizations",
+    response_model=OutputOrganizationModelSchema,
+    status_code=201,
+)
+async def create_organization(
+    request_org: OrganizationCreateSchema,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
+    org = org_repo.create(db=db, org=request_org)
+
+    return org

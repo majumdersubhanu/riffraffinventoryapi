@@ -3,11 +3,19 @@ from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
 from app.authentication import Authenticator
-from app.models import UserModel
+from app.models import (
+    UserModel,
+    OrganizationModel,
+    AddressModel,
+    CustomFieldModel,
+)
 from app.schemas import (
     InputUserModelSchema,
+    OutputOrganizationModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
+    OrganizationCreateSchema,
+    OrganizationBaseSchema,
 )
 
 from datetime import datetime
@@ -79,3 +87,94 @@ class UserRepo:
             )
 
         return OutputUserModelSchema.from_orm(user_in_db)
+
+
+class OrganizationRepo:
+    def __init__(self) -> None:
+        pass
+
+    def create(
+        self,
+        db: Session,
+        org: OrganizationCreateSchema,
+    ):
+        org_in_db = OrganizationModel(
+            name=org.name,
+            fiscal_year_start_month=org.fiscal_year_start_month,
+            currency_code=org.currency_code,
+            time_zone=org.time_zone,
+            date_format=org.date_format,
+            field_separator=org.field_separator,
+            language_code=org.language_code,
+            industry_type=org.industry_type,
+            industry_size=org.industry_size,
+            portal_name=org.portal_name,
+            org_address=org.org_address,
+            remit_to_address=org.remit_to_address,
+            is_default_org=org.is_default_org,
+            account_created_date=org.account_created_date,
+            contact_name=org.contact_name,
+            company_id_label=org.company_id_label,
+            company_id_value=org.company_id_value,
+            tax_id_label=org.tax_id_label,
+            tax_id_value=org.tax_id_value,
+            currency_id=org.currency_id,
+            currency_symbol=org.currency_symbol,
+            currency_format=org.currency_format,
+            price_precision=org.price_precision,
+            phone=org.phone,
+            fax=org.fax,
+            website=org.website,
+            email=org.email,
+            is_org_active=org.is_org_active,
+        )
+
+        db.add(org_in_db)
+        db.commit()
+        db.refresh(org_in_db)
+
+        # Adding addresses if any
+        if org.addresses is not None:
+            for addr in org.addresses:
+                db_addr = AddressModel(
+                    organization_id=org_in_db.id,
+                    street_address1=addr.street_address1,
+                    street_address2=addr.street_address2,
+                    city=addr.city,
+                    state=addr.state,
+                    country=addr.country,
+                    zip=addr.zip,
+                )
+                db.add(db_addr)
+                db.commit()
+                db.refresh(db_addr)
+
+        # Adding custom fields if any
+        if org.custom_fields is not None:
+            for custom_field in org.custom_fields:
+                db_custom_field = CustomFieldModel(
+                    organization_id=org_in_db.id,
+                    index=custom_field.index,
+                    value=custom_field.value,
+                    label=custom_field.label,
+                )
+                db.add(db_custom_field)
+                db.commit()
+                db.refresh(db_custom_field)
+
+        return OutputOrganizationModelSchema.from_orm(org_in_db)
+
+    def fetch_organizations(
+        self,
+        db: Session,
+    ):
+        orgs_in_db = db.query(OrganizationModel).all()
+
+        output_orgs_schemas = [
+            OutputOrganizationModelSchema.from_orm(org) for org in orgs_in_db
+        ]
+
+        return output_orgs_schemas
+
+
+class AddressRepo:
