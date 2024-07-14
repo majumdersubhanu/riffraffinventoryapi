@@ -7,6 +7,7 @@ import app.models as models
 from app.db import engine, get_db
 from app.schemas import (
     AddressCreateSchema,
+    CustomFieldCreateSchema,
     InputUserModelSchema,
     OrganizationCreateSchema,
     OrganizationUpdateSchema,
@@ -40,16 +41,21 @@ c_fields_repo = CustomFieldRepo()
 
 @app.post("/token")
 async def generate_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
 ):
     user = user_repo.login(db, form_data.username, form_data.password)
+
     access_token_expires = timedelta(
         minutes=float(auth.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
+
     authenticator = auth.Authenticator()
+
     tokens = authenticator.create_tokens(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+
     return {
         "access_token": tokens["access"],
         "refresh_token": tokens["refresh"],
@@ -65,12 +71,14 @@ def register_user(
     db: Session = Depends(get_db),
 ):
     user = user_repo.create(db=db, user=request_user)
+
     if user.organization is not None:
         default_org = OrganizationCreateSchema(
             name=user.organization,
         )
     else:
         default_org = OrganizationCreateSchema(name=f"{user.username}'s Organization")
+
     background_tasks.add_task(create_organization, default_org, db)
 
     return user
@@ -78,7 +86,8 @@ def register_user(
 
 @app.get("/users/me/", response_model=OutputUserModelSchema)
 async def fetch_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
 ):
     try:
         authenticator = auth.Authenticator()
@@ -96,12 +105,17 @@ async def fetch_current_user(
             detail=f"Could not validate credentials | details={e}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     user = user_repo.fetch_user_by_username(db=db, username=username)
+
     return user
 
 
 @app.post("/token/refresh")
-async def token_refresh(token: str, db: Session = Depends(get_db)):
+async def token_refresh(
+    token: str,
+    db: Session = Depends(get_db),
+):
     try:
         authenticator = auth.Authenticator()
         payload = authenticator.decode_access_token(token)
@@ -118,11 +132,15 @@ async def token_refresh(token: str, db: Session = Depends(get_db)):
             detail=f"Could not validate credentials | details={e}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     user = user_repo.fetch_user_by_username(db=db, username=username)
+
     access_token_expires = timedelta(minutes=float(auth.ACCESS_TOKEN_EXPIRE_MINUTES))
+
     tokens = authenticator.create_tokens(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+
     return {
         "access_token": tokens["access"],
         "refresh_token": token,
@@ -138,6 +156,7 @@ async def update_user_profile(
     token: str = Depends(oauth2_scheme),
 ):
     updated_user = user_repo.update_user(db=db, id=id, user=request_user)
+
     return updated_user
 
 
@@ -204,17 +223,23 @@ async def fetch_addresses_for_organization(
     status_code=201,
 )
 async def create_custom_fielf(
-    request_custom_field: AddressCreateSchema,
+    request_custom_field: CustomFieldCreateSchema,
     org_id: int,
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme),
 ):
-    pass
+    custom_field = c_fields_repo.create(
+        db=db,
+        custom_field=request_custom_field,
+        org_id=org_id,
+    )
+
+    return custom_field
 
 
 @app.get(
     "/custom_fields/{org_id}",
-    response_model=OutputCustomFieldModelSchema,
+    response_model=List[OutputCustomFieldModelSchema],
     status_code=201,
 )
 async def fetch_custom_fields_for_organization(
@@ -222,7 +247,9 @@ async def fetch_custom_fields_for_organization(
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme),
 ):
-    pass
+    org = org_repo.fetch_organizations_by_id(db=db, org_id=org_id)
+
+    return org.custom_fields
 
 
 @app.patch(
@@ -240,5 +267,5 @@ async def update_organization_details(
         id=org_id,
         org=request_org,
     )
-    
+
     return updated_org

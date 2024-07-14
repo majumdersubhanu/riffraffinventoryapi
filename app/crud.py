@@ -32,6 +32,7 @@ class UserRepo:
         user: InputUserModelSchema,
     ):
         hashed_password = Authenticator.get_password_hash(user.password)
+
         user_in_db = UserModel(
             username=user.username,
             email=user.email,
@@ -44,35 +45,56 @@ class UserRepo:
         db.add(user_in_db)
         db.commit()
         db.refresh(user_in_db)
+
         return OutputUserModelSchema.from_orm(user_in_db)
 
-    def login(self, db: Session, username: str, password: str):
+    def login(
+        self,
+        db: Session,
+        username: str,
+        password: str,
+    ):
         user_in_db = db.query(UserModel).filter(UserModel.username == username).first()
+
         if user_in_db is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User with given username not found",
             )
+
         is_valid = Authenticator.verify_password(
             plain_password=password, hashed_password=user_in_db.password
         )
+
         if not is_valid:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User credential mismatch",
             )
+
         return OutputUserModelSchema.from_orm(user_in_db)
 
-    def fetch_user_by_username(self, db: Session, username: str):
+    def fetch_user_by_username(
+        self,
+        db: Session,
+        username: str,
+    ):
         user_in_db = db.query(UserModel).filter(UserModel.username == username).first()
+
         if user_in_db is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User with given username not found",
             )
+
         return OutputUserModelSchema.from_orm(user_in_db)
 
-    def update_user(self, db: Session, user: UpdateUserModelSchema, id: int):
+    def update_user(
+        self,
+        db: Session,
+        user: UpdateUserModelSchema,
+        id: int,
+    ):
         user_in_db = db.query(UserModel).filter(UserModel.id == id).first()
 
         if user_in_db is None:
@@ -88,6 +110,7 @@ class UserRepo:
                 setattr(user_in_db, key, value)
             db.commit()
             db.refresh(user_in_db)
+
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -184,6 +207,23 @@ class OrganizationRepo:
 
         return output_orgs_schemas
 
+    def fetch_organizations_by_id(
+        self,
+        db: Session,
+        org_id: int,
+    ):
+        org_in_db = (
+            db.query(OrganizationModel).filter(OrganizationModel.id == org_id).first
+        )
+
+        if org_in_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Organization not found",
+            )
+
+        return OutputOrganizationModelSchema.from_orm(org_in_db)
+
     def update_organization(
         self,
         db: Session,
@@ -252,7 +292,6 @@ class CustomFieldRepo:
         db: Session,
         org_id: int,
         custom_field: CustomFieldCreateSchema,
-        index: int,
     ):
         custom_field_in_db = CustomFieldModel(
             organization_id=org_id,
