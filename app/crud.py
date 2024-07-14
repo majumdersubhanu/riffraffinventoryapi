@@ -13,13 +13,13 @@ from app.schemas import (
     AddressCreateSchema,
     CustomFieldCreateSchema,
     InputUserModelSchema,
+    OrganizationUpdateSchema,
     OutputAddressModelSchema,
     OutputOrganizationModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
     OrganizationCreateSchema,
 )
-
 
 
 class UserRepo:
@@ -183,6 +183,37 @@ class OrganizationRepo:
         ]
 
         return output_orgs_schemas
+
+    def update_organization(
+        self,
+        db: Session,
+        id: int,
+        org: OrganizationUpdateSchema,
+    ):
+        org_in_db = (
+            db.query(OrganizationModel).filter(OrganizationModel.id == id).first()
+        )
+
+        if org_in_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Organization not found",
+            )
+
+        update_data = org.dict(exclude_unset=True)
+
+        try:
+            for key, value in update_data.items():
+                setattr(org_in_db, key, value)
+            db.commit()
+            db.refresh(org_in_db)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=e,
+            )
+
+        return OutputOrganizationModelSchema.from_orm(org_in_db)
 
 
 class AddressRepo:
