@@ -240,5 +240,5 @@ async def update_organization_details(
         id=org_id,
         org=request_org,
     )
-    
+
     return updated_org
