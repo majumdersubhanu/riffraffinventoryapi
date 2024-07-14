@@ -61,7 +61,11 @@ class AddressCreateSchema(AddressBaseSchema):
 
 
 class AddressUpdateSchema(AddressBaseSchema):
-    pass
+    id: int
+
+
+class OutputAddressModelSchema(AddressBaseSchema):
+    id: int
 
 
 # Custom Field Schemas
@@ -79,7 +83,11 @@ class CustomFieldCreateSchema(CustomFieldBaseSchema):
 
 
 class CustomFieldUpdateSchema(CustomFieldBaseSchema):
-    pass
+    id: int
+
+
+class OutputCustomFieldModelSchema(CustomFieldBaseSchema):
+    id: int
 
 
 # Organization Schemas
