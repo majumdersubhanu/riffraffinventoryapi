@@ -6,6 +6,7 @@ from app.crud import AddressRepo, CustomFieldRepo, OrganizationRepo, UserRepo
 import app.models as models
 from app.db import engine, get_db
 from app.schemas import (
+    AddressBaseSchema,
     AddressCreateSchema,
     CustomFieldCreateSchema,
     InputUserModelSchema,
@@ -210,15 +211,26 @@ async def create_address(
 
 @app.get(
     "/address/{org_id}",
-    response_model=OutputAddressModelSchema,
-    status_code=201,
+    response_model=List[AddressBaseSchema],
+    status_code=200,
 )
 async def fetch_addresses_for_organization(
     org_id: int,
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme),
 ):
-    pass
+    org = org_repo.fetch_organizations_by_id(
+        db=db,
+        org_id=org_id,
+    )
+
+    if org.addresses is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No addresses listed for the organization",
+        )
+
+    return org.addresses
 
 
 @app.post(
