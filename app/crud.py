@@ -230,7 +230,7 @@ class OrganizationRepo:
         org_id: int,
     ):
         org_in_db = (
-            db.query(OrganizationModel).filter(OrganizationModel.id == org_id).first
+            db.query(OrganizationModel).filter(OrganizationModel.id == org_id).first()
         )
 
         if org_in_db is None:
