@@ -21,7 +21,11 @@ from datetime import timedelta
 import jwt
 from typing import List
 
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI(title="RiffRaff Inventory")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 models.Base.metadata.create_all(bind=engine)
 
