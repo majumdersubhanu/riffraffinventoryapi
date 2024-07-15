@@ -42,6 +42,7 @@ class UserRepo:
             last_name=user.last_name,
             role=user.role,
             organization=user.organization,
+            isActive=user.isActive,
         )
         db.add(user_in_db)
         db.commit()
