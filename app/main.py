@@ -222,7 +222,7 @@ async def fetch_addresses_for_organization(
     response_model=OutputCustomFieldModelSchema,
     status_code=201,
 )
-async def create_custom_fielf(
+async def create_custom_field(
     request_custom_field: CustomFieldCreateSchema,
     org_id: int,
     db: Session = Depends(get_db),
@@ -248,6 +248,12 @@ async def fetch_custom_fields_for_organization(
     token: str = Depends(oauth2_scheme),
 ):
     org = org_repo.fetch_organizations_by_id(db=db, org_id=org_id)
+
+    if org.custom_fields is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No custom fields found for organization.",
+        )
 
     return org.custom_fields
 
