@@ -4,46 +4,61 @@
 
 ### Clone Repository
 Clone the RiffRaff Inventory API repository from GitHub:
-```zsh
+```bash
 git clone https://github.com/majumdersubhanu/riffraffinventoryapi.git
 ```
 
-### Change Directory to the Cloned Repository
+### Change the Directory to the Cloned Repository
 Navigate to the directory of the cloned repository:
-```zsh
+```bash
 cd riffraffinventoryapi
 ```
 
 ### Create a Python Virtual Environment
 For Linux systems:
-```zsh
+```bash
 python3 -m venv .venv
 ```
 For Windows systems:
-```zsh
+```bash
 python -m venv .venv
 ```
 
 ### Activate the Virtual Environment
 Activate the virtual environment to manage dependencies:
 - On Linux/macOS:
-  ```zsh
+  ```bash
   source .venv/bin/activate
   ```
 - On Windows:
-  ```zsh
+  ```bash
   .venv\Scripts\activate
   ```
 
 ### Install Project Dependencies
 Install the required dependencies listed in the `requirements.txt` file:
-```zsh
+```bash
 pip install -r requirements.txt
+```
+
+### Create a .env file
+In the root directory create an empty file named `.env` and fill it with these details:
+```
+SECRET_KEY=<Your secret key>
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=15
+DATABASE_URL=<Your database connection string>
+```
+
+The secret key can be generated using this command:
+```bash
+python -c "import secrets; print(secrets.token_hex(32))" 
 ```
 
 ### Run the FastAPI Application
 Start the FastAPI application using Uvicorn:
-```zsh
+```bash
 uvicorn app.main:app --reload
 ```
 The application should now be running, and you can access it at `http://127.0.0.1:8000`.
