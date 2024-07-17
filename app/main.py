@@ -285,7 +285,7 @@ async def update_organization_details(
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme),
 ):
-    curr_usr = fetch_current_user(db=db)
+    curr_usr = await fetch_current_user(db=db)
     curr_usr_id = curr_usr.id if curr_usr is OutputUserModelSchema else None
     updated_org = org_repo.update_organization(
         db=db,
