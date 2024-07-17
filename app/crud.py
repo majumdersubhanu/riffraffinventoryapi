@@ -258,15 +258,12 @@ class AddressRepo:
         org_id: int,
         addr: AddressCreateSchema,
     ):
-        addr_in_db = AddressModel(
-            organization_id=org_id,
-            street_address1=addr.street_address1,
-            street_address2=addr.street_address2,
-            city=addr.city,
-            state=addr.state,
-            country=addr.country,
-            zip=addr.zip,
-        )
+        addr_in_db = AddressModel()
+
+        for key, value in addr:
+            setattr(addr_in_db, key, value)
+
+        setattr(addr_in_db, "organization_id", org_id)
 
         db.add(addr_in_db)
         db.commit()
@@ -285,12 +282,12 @@ class CustomFieldRepo:
         org_id: int,
         custom_field: CustomFieldCreateSchema,
     ):
-        custom_field_in_db = CustomFieldModel(
-            organization_id=org_id,
-            index=custom_field.index,
-            label=custom_field.label,
-            value=custom_field.value,
-        )
+        custom_field_in_db = CustomFieldModel()
+
+        for key, value in custom_field:
+            setattr(custom_field_in_db, key, value)
+
+        setattr(custom_field_in_db, "organization_id", org_id)
 
         db.add(custom_field_in_db)
         db.commit()
