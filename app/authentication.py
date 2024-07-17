@@ -35,7 +35,7 @@ class Authenticator:
         return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
-    def get_password_hash(password) -> str:
+    def get_password_hash(password: str) -> str:
         return pwd_context.hash(password)
 
     # Encode data into 2 tokens: access, and refresh token
@@ -63,14 +63,16 @@ class Authenticator:
                 "exp": expire_refresh,
             },
         )
+        
         access_token: str = jwt.encode(
-            to_encode_access,
-            SECRET_KEY,
+            payload=to_encode_access,
+            key=SECRET_KEY,
             algorithm=ALGORITHM,
         )
+
         refresh_token: str = jwt.encode(
-            to_encode_refresh,
-            SECRET_KEY,
+            payload=to_encode_refresh,
+            key=SECRET_KEY,
             algorithm=ALGORITHM,
         )
         return {
