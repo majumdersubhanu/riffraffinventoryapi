@@ -98,12 +98,13 @@ async def fetch_current_user(
         authenticator = auth.Authenticator()
         payload = authenticator.decode_access_token(token)
         username: str = payload.get("sub")
-        if username is None:
+        if username.strip() == "":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User credential mismatch",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+            
     except jwt.PyJWTError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -125,7 +126,7 @@ async def token_refresh(
         authenticator = auth.Authenticator()
         payload = authenticator.decode_access_token(token)
         username: str = payload.get("sub")
-        if username is None:
+        if username.strip() == "":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User credential mismatch",
