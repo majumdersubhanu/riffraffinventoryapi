@@ -34,16 +34,13 @@ class UserRepo:
     ):
         hashed_password = Authenticator.get_password_hash(user.password)
 
-        user_in_db = UserModel(
-            username=user.username,
-            email=user.email,
-            password=hashed_password,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            role=user.role,
-            organization=user.organization,
-            isActive=user.isActive,
-        )
+        user_in_db = UserModel()
+
+        for key, value in user:
+            setattr(user_in_db, key, value)
+
+        setattr(user_in_db, "password", hashed_password)
+
         db.add(user_in_db)
         db.commit()
         db.refresh(user_in_db)
