@@ -45,7 +45,7 @@ class UserRepo:
         db.commit()
         db.refresh(user_in_db)
 
-        return OutputUserModelSchema.from_orm(user_in_db)
+        return OutputUserModelSchema.model_validate(user_in_db)
 
     def login(
         self,
@@ -61,8 +61,11 @@ class UserRepo:
                 detail="User with given username not found",
             )
 
+        hashed_password: str = str(user_in_db.password)
+
         is_valid = Authenticator.verify_password(
-            plain_password=password, hashed_password=user_in_db.password
+            plain_password=password,
+            hashed_password=hashed_password,
         )
 
         if not is_valid:
@@ -71,7 +74,7 @@ class UserRepo:
                 detail="User credential mismatch",
             )
 
-        return OutputUserModelSchema.from_orm(user_in_db)
+        return OutputUserModelSchema.model_validate(user_in_db)
 
     def fetch_user_by_username(
         self,
@@ -86,7 +89,7 @@ class UserRepo:
                 detail="User with given username not found",
             )
 
-        return OutputUserModelSchema.from_orm(user_in_db)
+        return OutputUserModelSchema.model_validate(user_in_db)
 
     def fetch_user_by_id(
         self,
@@ -101,7 +104,7 @@ class UserRepo:
                 detail="User not found",
             )
 
-        return OutputUserModelSchema.from_orm(user_in_db)
+        return OutputUserModelSchema.model_validate(user_in_db)
 
     def update_user(
         self,
@@ -117,7 +120,7 @@ class UserRepo:
                 detail="User with given username not found",
             )
 
-        update_data = user.dict(exclude_unset=True)
+        update_data = user.model_dump(exclude_unset=True)
 
         try:
             for key, value in update_data.items():
@@ -131,7 +134,7 @@ class UserRepo:
                 detail=e,
             )
 
-        return OutputUserModelSchema.from_orm(user_in_db)
+        return OutputUserModelSchema.model_validate(user_in_db)
 
 
 class OrganizationRepo:
@@ -180,7 +183,7 @@ class OrganizationRepo:
                 db.commit()
                 db.refresh(db_custom_field)
 
-        return OutputOrganizationModelSchema.from_orm(org_in_db)
+        return OutputOrganizationModelSchema.model_validate(org_in_db)
 
     def fetch_organizations(
         self,
@@ -189,7 +192,7 @@ class OrganizationRepo:
         orgs_in_db = db.query(OrganizationModel).all()
 
         output_orgs_schemas = [
-            OutputOrganizationModelSchema.from_orm(org) for org in orgs_in_db
+            OutputOrganizationModelSchema.model_validate(org) for org in orgs_in_db
         ]
 
         return output_orgs_schemas
@@ -209,7 +212,7 @@ class OrganizationRepo:
                 detail="Organization not found",
             )
 
-        return OutputOrganizationModelSchema.from_orm(org_in_db)
+        return OutputOrganizationModelSchema.model_validate(org_in_db)
 
     def update_organization(
         self,
@@ -232,7 +235,7 @@ class OrganizationRepo:
                 detail="Organization not found",
             )
 
-        update_data = org.dict(exclude_unset=True)
+        update_data = org.model_dump(exclude_unset=True)
 
         try:
             for key, value in update_data.items():
@@ -245,7 +248,7 @@ class OrganizationRepo:
                 detail=e,
             )
 
-        return OutputOrganizationModelSchema.from_orm(org_in_db)
+        return OutputOrganizationModelSchema.model_validate(org_in_db)
 
 
 class AddressRepo:
@@ -269,7 +272,7 @@ class AddressRepo:
         db.commit()
         db.refresh(addr_in_db)
 
-        return OutputAddressModelSchema.from_orm(addr_in_db)
+        return OutputAddressModelSchema.model_validate(addr_in_db)
 
 
 class CustomFieldRepo:
@@ -293,4 +296,4 @@ class CustomFieldRepo:
         db.commit()
         db.refresh(custom_field_in_db)
 
-        return OutputAddressModelSchema.from_orm(custom_field_in_db)
+        return OutputAddressModelSchema.model_validate(custom_field_in_db)
