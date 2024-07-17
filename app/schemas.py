@@ -93,7 +93,7 @@ class OutputCustomFieldModelSchema(CustomFieldBaseSchema):
 
 # Organization Schemas
 class OrganizationBaseSchema(BaseModel):
-    name: Optional[str]
+    name: Optional[str] = None
     fiscal_year_start_month: Optional[str] = "Apr"
     currency_code: Optional[str] = "INR"
     time_zone: Optional[str] = tzlocal.get_localzone_name()
