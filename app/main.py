@@ -1,23 +1,37 @@
 from fastapi import FastAPI, HTTPException, status, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm.session import Session
+
 from app import authentication as auth
-from app.crud import AddressRepo, CustomFieldRepo, OrganizationRepo, UserRepo
-import app.models as models
 from app.db import engine, get_db
+from app.crud import CustomFieldRepo
+import app.models as models
 from app.schemas import (
-    AddressBaseSchema,
-    AddressCreateSchema,
     CustomFieldCreateSchema,
-    InputUserModelSchema,
-    OrganizationCreateSchema,
-    OrganizationUpdateSchema,
-    OutputAddressModelSchema,
     OutputCustomFieldModelSchema,
-    OutputOrganizationModelSchema,
+)
+
+from users.repo import UserRepo
+from users.schemas import (
+    InputUserModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
 )
+
+from organizations.repo import OrganizationRepo
+from organizations.schemas import (
+    OrganizationCreateSchema,
+    OutputOrganizationModelSchema,
+    OrganizationUpdateSchema,
+)
+
+from addresses.repo import AddressRepo
+from addresses.schemas import (
+    AddressBaseSchema,
+    AddressCreateSchema,
+    OutputAddressModelSchema,
+)
+
 from datetime import timedelta
 import jwt
 from typing import List
