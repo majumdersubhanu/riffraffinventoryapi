@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from addresses.models import AddressModel
-from addresses.schemas import (
+from app.addresses.models import AddressModel
+from app.addresses.schemas import (
     AddressCreateSchema,
     OutputAddressModelSchema,
 )

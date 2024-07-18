@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from typing import Optional
 
 
 class BaseUserModelSchema(BaseModel):

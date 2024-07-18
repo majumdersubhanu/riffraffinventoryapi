@@ -11,22 +11,22 @@ from app.schemas import (
     OutputCustomFieldModelSchema,
 )
 
-from users.repo import UserRepo
-from users.schemas import (
+from app.users.repo import UserRepo
+from app.users.schemas import (
     InputUserModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
 )
 
-from organizations.repo import OrganizationRepo
-from organizations.schemas import (
+from app.organizations.repo import OrganizationRepo
+from app.organizations.schemas import (
     OrganizationCreateSchema,
     OutputOrganizationModelSchema,
     OrganizationUpdateSchema,
 )
 
-from addresses.repo import AddressRepo
-from addresses.schemas import (
+from app.addresses.repo import AddressRepo
+from app.addresses.schemas import (
     AddressBaseSchema,
     AddressCreateSchema,
     OutputAddressModelSchema,

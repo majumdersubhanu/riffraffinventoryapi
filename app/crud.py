@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models import CustomFieldModel
 from app.schemas import CustomFieldCreateSchema
 
-from addresses.schemas import OutputAddressModelSchema
+from app.addresses.schemas import OutputAddressModelSchema
 
 
 class CustomFieldRepo:
