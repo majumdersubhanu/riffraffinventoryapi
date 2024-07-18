@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models import CustomFieldModel
-from app.schemas import CustomFieldCreateSchema
+from app.schemas import CustomFieldCreateSchema, OutputCustomFieldModelSchema
 
 from app.addresses.schemas import OutputAddressModelSchema
 
@@ -27,4 +27,4 @@ class CustomFieldRepo:
         db.commit()
         db.refresh(custom_field_in_db)
 
-        return OutputAddressModelSchema.model_validate(custom_field_in_db)
+        return OutputCustomFieldModelSchema.model_validate(custom_field_in_db)
