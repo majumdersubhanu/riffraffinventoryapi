@@ -1,6 +1,5 @@
-from datetime import datetime
-from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from pydantic import BaseModel
+from typing import Optional
 
 
 class AddressBaseSchema(BaseModel):

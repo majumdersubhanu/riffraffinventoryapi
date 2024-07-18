@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.models import CustomFieldModel
 
-from organizations.models import OrganizationModel
-from users.models import UserModel
-from addresses.models import AddressModel 
-from organizations.schemas import (
+from app.organizations.models import OrganizationModel
+from app.users.models import UserModel
+from app.addresses.models import AddressModel 
+from app.organizations.schemas import (
     OrganizationCreateSchema,
     OrganizationUpdateSchema,
     OutputOrganizationModelSchema,

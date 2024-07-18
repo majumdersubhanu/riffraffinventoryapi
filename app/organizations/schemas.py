@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 import tzlocal
 
-from addresses.schemas import AddressBaseSchema
+from app.addresses.schemas import AddressBaseSchema
 from app.schemas import CustomFieldBaseSchema
 
 

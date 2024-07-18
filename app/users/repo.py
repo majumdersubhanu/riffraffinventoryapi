@@ -4,8 +4,8 @@ from fastapi.exceptions import HTTPException
 
 from app.authentication import Authenticator
 
-from users.models import UserModel
-from users.schemas import (
+from app.users.models import UserModel
+from app.users.schemas import (
     InputUserModelSchema,
     OutputUserModelSchema,
     UpdateUserModelSchema,
