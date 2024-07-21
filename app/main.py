@@ -26,9 +26,9 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="RiffRaff Inventory")
 
-app.include_router(user_router)
-app.include_router(org_router)
-app.include_router(address_router)
+app.include_router(user_router, tags=["Users"])
+app.include_router(org_router, tags=["Organization"])
+app.include_router(address_router, tags=["Address"])
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
