@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 
 from app.base import Base
 from app.database import engine, get_db
-from app.organization.models import Organization
-from app.organization.schemas import CreateOrganizationSchema, OutputOrganizationSchema
 from app.users.models import User
 from app.users.schemas import CreateUserSchema, OutputUserSchema
+from app.organization.routing.router import org_router
 
 app = FastAPI(
     title="RiffRaff Inventory",
@@ -15,6 +14,8 @@ app = FastAPI(
 Base.metadata.create_all(
     bind=engine,
 )
+
+app.include_router(org_router)
 
 
 @app.get(path="/", status_code=200)
@@ -51,33 +52,3 @@ def create_user(request_user: CreateUserSchema, db: Session = Depends(get_db)):
         )
 
     return OutputUserSchema.model_validate(user_in_db)
-
-
-@app.get(path="/organizations", status_code=200)
-def get_organizations(db: Session = Depends(get_db)):
-    db.query(Organization).all()
-
-
-@app.post(path="/organizations", status_code=201)
-def create_organization(
-    request_org: CreateOrganizationSchema, db: Session = Depends(get_db)
-):
-    org_in_db = Organization(
-        name=request_org.name,
-        admin_id=request_org.admin_id,
-    )
-
-    db.add(org_in_db)
-    db.commit()
-    db.refresh(org_in_db)
-
-    if (
-        db.query(Organization).filter(Organization.name == request_org.name).first()
-        is None
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not create organization",
-        )
-
-    return OutputOrganizationSchema.model_validate(org_in_db)
