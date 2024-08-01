@@ -33,7 +33,7 @@ def create_organization(
 @org_router.get(
     path="/",
     status_code=201,
-    response_model=OutputOrganizationSchema,
+    response_model=List[OutputOrganizationSchema],
 )
 def get_all_organization(
     db: Session = Depends(get_db),

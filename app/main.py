@@ -1,11 +1,8 @@
-from fastapi import Depends, FastAPI, HTTPException, status
-from sqlalchemy.orm import Session
-
+from fastapi import FastAPI
 from app.base import Base
-from app.database import engine, get_db
-from app.users.models import User
-from app.users.schemas import CreateUserSchema, OutputUserSchema
+from app.database import engine
 from app.organization.routing.router import org_router
+from app.users.routing.router import user_router
 
 app = FastAPI(
     title="RiffRaff Inventory",
@@ -16,6 +13,7 @@ Base.metadata.create_all(
 )
 
 app.include_router(org_router)
+app.include_router(user_router)
 
 
 @app.get(path="/", status_code=200)
@@ -23,32 +21,3 @@ def root():
     return {
         "message": "Welcome to RiffRaff Inventory",
     }
-
-
-@app.get(path="/users", status_code=200)
-def get_users(db: Session = Depends(get_db)):
-    db.query(User).all()
-
-
-@app.post(path="/users", status_code=201)
-def create_user(request_user: CreateUserSchema, db: Session = Depends(get_db)):
-    user_in_db = User(
-        username=request_user.username,
-        password=request_user.password,
-        f_name=request_user.f_name,
-        l_name=request_user.l_name,
-        email=request_user.email,
-        role=request_user.role,
-    )
-
-    db.add(user_in_db)
-    db.commit()
-    db.refresh(user_in_db)
-
-    if db.query(User).filter(User.username == request_user.username).first() is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not create user",
-        )
-
-    return OutputUserSchema.model_validate(user_in_db)
