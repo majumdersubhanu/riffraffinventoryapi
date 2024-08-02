@@ -6,7 +6,7 @@ from app.inventory.repos import InventoryRepo
 from app.inventory.schemas import CreateInventorySchema, OutputInventorySchema
 
 inventory_router = APIRouter(
-    tags=["Inventory"],
+    tags=["Inventories"],
     prefix="/inventories",
 )
 

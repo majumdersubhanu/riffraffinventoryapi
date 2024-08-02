@@ -6,7 +6,7 @@ from app.users.repos import UserRepo
 from app.users.schemas import CreateUserSchema, OutputUserSchema
 
 user_router = APIRouter(
-    tags=["User"],
+    tags=["Users"],
     prefix="/users",
 )
 

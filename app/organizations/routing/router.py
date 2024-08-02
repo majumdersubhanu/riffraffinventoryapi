@@ -6,7 +6,7 @@ from app.organizations.repos import OrganizationRepo
 from app.organizations.schemas import OutputOrganizationSchema, CreateOrganizationSchema
 
 org_router = APIRouter(
-    tags=["Organization"],
+    tags=["Organizations"],
     prefix="/organizations",
 )
 
