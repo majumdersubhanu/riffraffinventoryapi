@@ -3,6 +3,8 @@ from app.base import Base
 from app.database import engine
 from app.organizations.routing.router import org_router
 from app.users.routing.router import user_router
+from app.shops.routing.router import shop_router
+from app.inventory.routing.router import inventory_router
 
 app = FastAPI(
     title="RiffRaff Inventory",
@@ -14,10 +16,5 @@ Base.metadata.create_all(
 
 app.include_router(org_router)
 app.include_router(user_router)
-
-
-@app.get(path="/", status_code=200)
-def root():
-    return {
-        "message": "Welcome to RiffRaff Inventory",
-    }
+app.include_router(shop_router)
+app.include_router(inventory_router)
