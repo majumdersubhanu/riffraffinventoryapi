@@ -2,44 +2,44 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.shops.repos import ShopRepo
-from app.shops.schemas import CreateShopSchema, OutputShopSchema
+from app.inventory.repos import InventoryRepo
+from app.inventory.schemas import CreateInventorySchema, OutputInventorySchema
 
 inventory_router = APIRouter(
     tags=["Inventory"],
     prefix="/inventories",
 )
 
-inventory_repo = ShopRepo()
+inventory_repo = InventoryRepo()
 
 
 @inventory_router.post(
     path="/",
     status_code=201,
-    response_model=OutputShopSchema,
+    response_model=OutputInventorySchema,
 )
-def create_organization(
-    request_shop: CreateShopSchema,
+def create_inventory(
+    request_inventory: CreateInventorySchema,
     db: Session = Depends(get_db),
-) -> OutputShopSchema:
-    output_shop = inventory_repo.create_shop(
+) -> OutputInventorySchema:
+    inventory_shop = inventory_repo.create_inventory(
         db=db,
-        request_shop=request_shop,
+        request_inventory=request_inventory,
     )
 
-    return output_shop
+    return inventory_shop
 
 
 @inventory_router.get(
     path="/",
     status_code=201,
-    response_model=List[OutputShopSchema],
+    response_model=List[OutputInventorySchema],
 )
 def get_all_shops(
     db: Session = Depends(get_db),
-) -> List[OutputShopSchema]:
-    output_shops = inventory_repo.get_all_shops(
+) -> List[OutputInventorySchema]:
+    output_inventories = inventory_repo.get_all_inventories(
         db=db,
     )
 
-    return output_shops
+    return output_inventories

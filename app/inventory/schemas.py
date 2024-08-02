@@ -1,17 +1,16 @@
 from pydantic import BaseModel
 
 
-class BaseShopSchema(BaseModel):
-    name: str
-    vendor_id: int
+class BaseInventorySchema(BaseModel):
+    shop_id: int
 
     class Config:
         from_attributes = True
 
 
-class CreateShopSchema(BaseShopSchema):
+class CreateInventorySchema(BaseInventorySchema):
     pass
 
 
-class OutputShopSchema(BaseShopSchema):
+class OutputInventorySchema(BaseInventorySchema):
     id: int
