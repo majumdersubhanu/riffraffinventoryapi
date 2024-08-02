@@ -1,6 +1,6 @@
 from typing import List
-from app.organization.models import Organization
-from app.organization.schemas import CreateOrganizationSchema, OutputOrganizationSchema
+from app.organizations.models import Organization
+from app.organizations.schemas import CreateOrganizationSchema, OutputOrganizationSchema
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 

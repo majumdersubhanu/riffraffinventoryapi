@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.base import Base
 from app.database import engine
-from app.organization.routing.router import org_router
+from app.organizations.routing.router import org_router
 from app.users.routing.router import user_router
 
 app = FastAPI(

@@ -2,8 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.organization.repos import OrganizationRepo
-from app.organization.schemas import OutputOrganizationSchema, CreateOrganizationSchema
+from app.organizations.repos import OrganizationRepo
+from app.organizations.schemas import OutputOrganizationSchema, CreateOrganizationSchema
 
 org_router = APIRouter(
     tags=["Organization"],
