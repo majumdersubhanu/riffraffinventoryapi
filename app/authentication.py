@@ -6,6 +6,9 @@ from datetime import timedelta
 from typing import Any, Optional
 import jwt
 from dotenv import load_dotenv
+from sqlalchemy.orm import Session
+
+from app.users.models import User
 
 load_dotenv()
 
@@ -87,3 +90,22 @@ class Authentication:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
             )
+
+    def authenticate_user(
+        self,
+        db: Session,
+        username: str,
+        password: str,
+    ):
+        user = db.query(User).filter(User.username == username).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
+        if not self.verify_password(password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User credential mismatch",
+            )
+        return user
