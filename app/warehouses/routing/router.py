@@ -18,7 +18,7 @@ warehouse_repo = WarehouseRepo()
     status_code=201,
     response_model=OutputWarehouseSchema,
 )
-def create_inventory(
+def create_warehouse(
     request_warehouse: CreateWarehouseSchema,
     db: Session = Depends(get_db),
 ) -> OutputWarehouseSchema:
@@ -35,7 +35,7 @@ def create_inventory(
     status_code=201,
     response_model=List[OutputWarehouseSchema],
 )
-def get_all_shops(
+def get_all_warehouses(
     db: Session = Depends(get_db),
 ) -> List[OutputWarehouseSchema]:
     output_inventories = warehouse_repo.get_all_warehouses(
