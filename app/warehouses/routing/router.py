@@ -2,8 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.warehouse.repos import WarehouseRepo
-from app.warehouse.schemas import CreateWarehouseSchema, OutputWarehouseSchema
+from app.warehouses.repos import WarehouseRepo
+from app.warehouses.schemas import CreateWarehouseSchema, OutputWarehouseSchema
 
 warehouse_router = APIRouter(
     tags=["Warehouses"],

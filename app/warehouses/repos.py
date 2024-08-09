@@ -2,8 +2,8 @@ from typing import List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
-from app.warehouse.models import Warehouse
-from app.warehouse.schemas import CreateWarehouseSchema, OutputWarehouseSchema
+from app.warehouses.models import Warehouse
+from app.warehouses.schemas import CreateWarehouseSchema, OutputWarehouseSchema
 
 
 class WarehouseRepo:
