@@ -16,7 +16,7 @@ class ProductRepo:
         db: Session,
     ):
         inventory_in_db = Product(
-            inventory_id=request_inventory.inventory_id,
+            inventory_id=request_inventory.warehouse_id,
         )
 
         db.add(inventory_in_db)
@@ -25,7 +25,7 @@ class ProductRepo:
 
         if (
             db.query(Product)
-            .filter(Product.inventory_id == request_inventory.inventory_id)
+            .filter(Product.warehouse_id == request_inventory.warehouse_id)
             .first()
             is None
         ):
