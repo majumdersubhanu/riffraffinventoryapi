@@ -18,7 +18,7 @@ shop_repo = ShopRepo()
     status_code=201,
     response_model=OutputShopSchema,
 )
-def create_organization(
+def create_shop(
     request_shop: CreateShopSchema,
     db: Session = Depends(get_db),
 ) -> OutputShopSchema:

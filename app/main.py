@@ -4,7 +4,7 @@ from app.database import engine
 from app.organizations.routing.router import org_router
 from app.users.routing.router import user_router
 from app.shops.routing.router import shop_router
-from app.inventory.routing.router import inventory_router
+from app.inventories.routing.router import inventory_router
 from app.products.routing.router import product_router
 from app.warehouses.routing.router import warehouse_router
 

@@ -16,7 +16,7 @@ class WarehouseRepo:
         db: Session,
     ):
         warehouse_in_db = Warehouse(
-            shop_id=request_warehouse.inventory_id,
+            inventory_id=request_warehouse.inventory_id,
         )
 
         db.add(warehouse_in_db)

@@ -16,7 +16,7 @@ class ProductRepo:
         db: Session,
     ):
         inventory_in_db = Product(
-            inventory_id=request_inventory.warehouse_id,
+            warehouse_id=request_inventory.warehouse_id,
         )
 
         db.add(inventory_in_db)

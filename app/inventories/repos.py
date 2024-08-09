@@ -2,8 +2,8 @@ from typing import List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
-from app.inventory.models import Inventory
-from app.inventory.schemas import CreateInventorySchema, OutputInventorySchema
+from app.inventories.models import Inventory
+from app.inventories.schemas import CreateInventorySchema, OutputInventorySchema
 
 
 class InventoryRepo:
